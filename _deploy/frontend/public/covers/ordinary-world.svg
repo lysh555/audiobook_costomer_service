@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2d3a2a"/>
+      <stop offset="0.55" stop-color="#4d6a38"/>
+      <stop offset="1" stop-color="#7a9450"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#bg)"/>
+  <circle cx="252" cy="56" r="96" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="28" cy="362" r="82" fill="rgba(0,0,0,0.14)"/>
+  <g fill="rgba(245,255,225,0.40)">
+    <rect x="120" y="118" width="6" height="34" rx="3"/>
+    <rect x="132" y="104" width="6" height="62" rx="3"/>
+    <rect x="144" y="92" width="6" height="86" rx="3"/>
+    <rect x="156" y="108" width="6" height="58" rx="3"/>
+    <rect x="168" y="120" width="6" height="30" rx="3"/>
+  </g>
+  <text x="150" y="240" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="36" font-weight="700" fill="#f7ffe8">平凡的世界</text>
+  <text x="150" y="274" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="15" fill="rgba(247,255,232,0.86)">路遥 著</text>
+  <rect x="120" y="308" width="60" height="24" rx="12" fill="rgba(247,255,232,0.16)"/>
+  <text x="150" y="324" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="12" fill="#f7ffe8">小说</text>
+</svg>

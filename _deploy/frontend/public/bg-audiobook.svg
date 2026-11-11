@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e7b05e" stop-opacity="0"/>
+      <stop offset="0.18" stop-color="#e7b05e" stop-opacity="0.10"/>
+      <stop offset="0.5" stop-color="#e7b05e" stop-opacity="0.16"/>
+      <stop offset="0.82" stop-color="#e7b05e" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#e7b05e" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="ripple" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.7" stop-color="#e7b05e" stop-opacity="0"/>
+      <stop offset="0.92" stop-color="#e7b05e" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#e7b05e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 声波纹理 -->
+  <g fill="none" stroke="url(#wave)" stroke-width="2" stroke-linecap="round">
+    <path d="M0 210 Q60 160 120 205 T240 195 T360 215 T480 180 T600 210 T720 170 T840 205 T960 185 T1080 215 T1200 175 T1320 210 T1440 190 T1560 210 T1600 190"/>
+    <path d="M0 470 Q80 420 160 465 T320 450 T480 475 T640 440 T800 470 T960 430 T1120 465 T1280 445 T1440 475 T1600 450"/>
+    <path d="M0 730 Q70 685 140 725 T300 710 T460 735 T620 700 T780 730 T940 690 T1100 725 T1260 705 T1420 735 T1600 710"/>
+  </g>
+
+  <!-- 涟漪 -->
+  <g fill="url(#ripple)">
+    <circle cx="250" cy="180" r="150"/>
+    <circle cx="1350" cy="660" r="190"/>
+    <circle cx="1180" cy="150" r="120"/>
+    <circle cx="420" cy="760" r="160"/>
+  </g>
+
+  <!-- 音符 -->
+  <g fill="#e7b05e" opacity="0.18" font-family="'Segoe UI Symbol','Arial Unicode MS',sans-serif">
+    <text x="320" y="150" font-size="54">♪</text>
+    <text x="1280" y="230" font-size="46">♫</text>
+    <text x="150" y="640" font-size="44">♫</text>
+    <text x="1420" y="470" font-size="58">♪</text>
+    <text x="760" y="90" font-size="40">♫</text>
+    <text x="980" y="800" font-size="48">♪</text>
+  </g>
+
+  <!-- 耳机图标 -->
+  <g transform="translate(520,700)" fill="none" stroke="#e7b05e" stroke-width="3" opacity="0.16">
+    <path d="M0 24 v-4 a24 24 0 0 1 24 -24 h40 a24 24 0 0 1 24 24 v4"/>
+    <rect x="-8" y="20" width="22" height="30" rx="11"/>
+    <rect x="74" y="20" width="22" height="30" rx="11"/>
+  </g>
+  <g transform="translate(1080,120)" fill="none" stroke="#c96f3d" stroke-width="3" opacity="0.14">
+    <path d="M0 24 v-4 a24 24 0 0 1 24 -24 h40 a24 24 0 0 1 24 24 v4"/>
+    <rect x="-8" y="20" width="22" height="30" rx="11"/>
+    <rect x="74" y="20" width="22" height="30" rx="11"/>
+  </g>
+</svg>

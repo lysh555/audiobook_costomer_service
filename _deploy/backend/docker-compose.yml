@@ -1,0 +1,34 @@
+services:
+  # 1. 数据库服务
+  mysql:
+    image: mysql:8.0.29
+    container_name: customer-service-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: audiobook
+    ports:
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/initdb:/docker-entrypoint-initdb.d
+
+  # 2. 听书后端 API 服务
+  api:
+    build: .
+    container_name: audiobook-api
+    restart: always
+    ports:
+      - "18081:18081"
+    depends_on:
+      - mysql
+    environment:
+      # 直接使用完整的 URL，并把 IP 替换为服务名 mysql（Docker 内部 DNS 会自动解析）
+      DATABASE_URL: "mysql+pymysql://root:root@mysql:3306/audiobook?charset=utf8mb4"
+      APP_PORT: 18081
+
+volumes:
+  mysql_data:   # 持久化 MySQL 数据，防止容器重启后数据丢失

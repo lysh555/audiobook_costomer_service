@@ -1,0 +1,781 @@
+slots:
+  order_number:
+    type: text
+    label: 订单号
+    description: 用户的听书商城订单号
+
+  order_status:
+    type: text
+    label: 订单状态
+    description: 订单当前状态
+
+  order_summary:
+    type: text
+    label: 订单摘要
+    description: 订单摘要信息
+
+  book_id:
+    type: text
+    label: 听书ID
+    description: 当前咨询听书的唯一标识
+
+  book_name:
+    type: text
+    label: 听书名称
+    description: 听书的名称
+
+  author:
+    type: text
+    label: 作者
+    description: 听书的作者名称
+
+  category:
+    type: text
+    label: 分类
+    description: 听书的分类（如小说、历史、教育等）
+
+  chapter_number:
+    type: text
+    label: 章节号
+    description: 用户想要收听的章节编号
+
+  playback_speed:
+    type: text
+    label: 播放速度
+    description: 听书的播放速度设置
+
+  refund_reason:
+    type: text
+    label: 退款原因
+    description: 申请退款的原因
+
+  recommendation_summary:
+    type: text
+    label: 推荐结果
+    description: 相似听书推荐结果的展示文本
+
+  vip_status:
+    type: text
+    label: VIP状态
+    description: 用户的VIP会员状态
+
+  remaining_listening_minutes:
+    type: text
+    label: 剩余收听时长
+    description: 用户剩余的可收听时长（分钟）
+
+  coupon_code:
+    type: text
+    label: 优惠码
+    description: 用户输入的优惠码
+
+  coupon_info:
+    type: text
+    label: 优惠码信息
+    description: 优惠码的详细信息
+
+  coupon_redeemed:
+    type: text
+    label: 优惠码兑换结果
+    description: 优惠码是否兑换成功，true 表示成功，false 表示失败
+
+  chapter_ready:
+    type: text
+    label: 章节跳转结果
+    description: 章节是否可用，true 表示章节有效，false 表示章节无效
+
+  chapter_error:
+    type: text
+    label: 章节跳转失败原因
+    description: 章节号无效时给用户的说明
+
+  refund_submitted:
+    type: text
+    label: 退款申请结果
+    description: 退款申请是否提交成功，true 表示成功，false 表示失败
+
+  refund_message:
+    type: text
+    label: 退款申请说明
+    description: 退款申请提交结果给用户的说明
+
+  book_found:
+    type: text
+    label: 听书查询结果
+    description: 是否查询到听书，true 表示查到，false 表示未查到
+
+  book_error:
+    type: text
+    label: 听书查询失败原因
+    description: 听书未查到或查询失败时给用户的说明
+
+  vip_query_ok:
+    type: text
+    label: VIP状态查询结果
+    description: VIP状态是否查询成功，true 表示成功，false 表示失败
+
+  vip_query_error:
+    type: text
+    label: VIP状态查询失败原因
+    description: VIP状态查询失败时给用户的说明
+
+  order_list_summary:
+    type: text
+    label: 我的订单列表
+    description: 当前用户订单列表的展示文本
+
+  book_list_summary:
+    type: text
+    label: 我的听书列表
+    description: 当前用户已购听书列表的展示文本
+
+  coupon_list_summary:
+    type: text
+    label: 我的优惠券列表
+    description: 当前用户可用优惠券列表的展示文本
+
+  purchase_ok:
+    type: text
+    label: 下单结果
+    description: 下单是否成功，true 表示成功，false 表示失败
+
+  purchase_message:
+    type: text
+    label: 下单说明
+    description: 下单结果给用户的说明
+
+  pay_amount:
+    type: text
+    label: 订单应付金额
+    description: 新创建订单的应付金额
+
+  pay_ok:
+    type: text
+    label: 支付结果
+    description: 订单支付是否成功，true 表示成功，false 表示失败
+
+  pay_message:
+    type: text
+    label: 支付说明
+    description: 订单支付结果给用户的说明
+
+  vip_months:
+    type: text
+    label: 开通月数
+    description: 用户希望开通或续费VIP的月数
+
+  vip_subscribe_ok:
+    type: text
+    label: VIP开通结果
+    description: VIP开通是否成功，true 表示成功，false 表示失败
+
+  vip_subscribe_message:
+    type: text
+    label: VIP开通说明
+    description: VIP开通结果给用户的说明
+
+  handoff_reason:
+    type: text
+    label: 转人工原因
+    description: 用户请求转人工客服的原因
+
+  handoff_ok:
+    type: text
+    label: 转人工结果
+    description: 人工客服工单登记是否成功，true 表示成功，false 表示失败
+
+  handoff_message:
+    type: text
+    label: 转人工说明
+    description: 人工客服工单登记结果给用户的说明
+
+flows:
+  onboarding:
+    name: 欢迎引导
+    description: 在聊天窗口初次打开时欢迎用户，并介绍助手可处理的听书商城服务。这个 flow 通常由系统主动触发。
+    steps:
+      - id: start
+        type: start
+        next: respond
+
+      - id: respond
+        type: response
+        template:
+          text: "你好，这里是听书商城助手。我可以帮你查订单状态、查看我的订单和已购听书、了解听书详情、搜索和推荐听书、购买听书下单、支付订单、提交退款申请、查询VIP权益、开通或续费会员、查看优惠券，需要的话也可以转人工客服。"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  order_status_query:
+    name: 订单状态查询
+    description: 帮用户查询听书商城订单当前的处理状态，例如待支付、已完成、已退款等。
+    steps:
+      - id: start
+        type: start
+        next: ask_order_number
+
+      - id: ask_order_number
+        type: collect
+        slot_name: order_number
+        template:
+          mode: static
+          text: "请告诉我你的订单号。"
+        validation:
+          condition: "slots.get('order_number')"
+          failure_template:
+            mode: static
+            text: "订单号不能为空，请重新输入。"
+        next: lookup_order_status
+
+      - id: lookup_order_status
+        type: action
+        action: action_lookup_order_status
+        next: show_order_status
+
+      - id: show_order_status
+        type: response
+        description: 回复订单状态查询结果
+        template:
+          mode: rephrase
+          text: "{% if slots.order_status %}订单{{ slots.order_number }}当前状态是：{{ slots.order_status }}。{% else %}{{ slots.order_summary }}{% endif %}"
+          prompt: |
+            请结合对话历史和当前用户消息，对基础回复进行自然改写。
+
+            对话历史：{{ history }}
+            当前用户消息：{{ user_message }}
+            基础回复：{{ current_response }}
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  book_info_query:
+    name: 听书详情查询
+    description: 帮用户查询指定听书的详细信息，包括作者、简介、章节数、播放时长等。
+    steps:
+      - id: start
+        type: start
+        next:
+          - if: "slots.get('book_id')"
+            then: lookup_book_info
+          - else: ask_book_name
+
+      - id: ask_book_name
+        type: collect
+        slot_name: book_name
+        template:
+          text: "请告诉我你想了解的听书名称。"
+        next: search_book_by_name
+
+      - id: search_book_by_name
+        type: action
+        action: action_search_book_by_name
+        next:
+          - if: "slots.get('book_found') == 'true'"
+            then: show_book_info
+          - else: show_book_error
+
+      - id: lookup_book_info
+        type: action
+        action: action_lookup_book_info
+        next:
+          - if: "slots.get('book_found') == 'true'"
+            then: show_book_info
+          - else: show_book_error
+
+      - id: show_book_info
+        type: response
+        template:
+          text: "听书《{{ slots.book_name }}》的详情信息已为你查询，作者：{{ slots.author }}，分类：{{ slots.category }}。更多内容可以在听书详情页查看。"
+        next: end
+
+      - id: show_book_error
+        type: response
+        template:
+          text: "{{ slots.book_error }}"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  book_search:
+    name: 听书搜索
+    description: 帮用户搜索和推荐听书，支持按关键词、场景（如睡前、通勤、学习）、分类、作者等条件。用户说"推荐一本适合XX的书""有没有XX类的听书""帮我找XX"这类没有指定具体听书名的请求，都应走这个 flow。
+    steps:
+      - id: start
+        type: start
+        next: ask_search_condition
+
+      - id: ask_search_condition
+        type: collect
+        slot_name: book_name
+        template:
+          text: "请输入你想搜索的听书名称、作者或关键词。"
+        next: perform_search
+
+      - id: perform_search
+        type: action
+        action: action_search_books
+        next: show_search_results
+
+      - id: show_search_results
+        type: response
+        template:
+          text: "{{ slots.recommendation_summary }}。你可以点击感兴趣的听书查看详情。"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  chapter_navigation:
+    name: 章节导航
+    description: 帮用户跳转到指定章节或了解听书的章节结构。用户已经发送听书卡片或明确提到“这本听书”时，可以直接开始。
+    steps:
+      - id: start
+        type: start
+        next: ensure_book
+
+      - id: ensure_book
+        type: collect
+        slot_name: book_id
+        template:
+          text: "请先选择一本听书，再继续查询章节信息。"
+        next: ask_chapter_number
+
+      - id: ask_chapter_number
+        type: collect
+        slot_name: chapter_number
+        template:
+          text: "请告诉我你想跳转到的章节编号。"
+        next: navigate_to_chapter
+
+      - id: navigate_to_chapter
+        type: action
+        action: action_navigate_to_chapter
+        next:
+          - if: "slots.get('chapter_ready') == 'true'"
+            then: show_chapter_info
+          - else: show_chapter_error
+
+      - id: show_chapter_info
+        type: response
+        template:
+          text: "已为你跳转到《{{ slots.book_name }}》的第{{ slots.chapter_number }}章，现在可以开始收听了。"
+        next: end
+
+      - id: show_chapter_error
+        type: response
+        template:
+          text: "{{ slots.chapter_error }}"
+        next: ensure_book
+
+      - id: end
+        type: end
+        next: []
+
+  vip_status_query:
+    name: VIP状态查询
+    description: 帮用户查询自己的VIP会员状态、剩余收听时长、会员权益等信息。
+    steps:
+      - id: start
+        type: start
+        next: query_vip_status
+
+      - id: query_vip_status
+        type: action
+        action: action_lookup_vip_status
+        next:
+          - if: "slots.get('vip_query_ok') == 'true'"
+            then: show_vip_status
+          - else: show_vip_error
+
+      - id: show_vip_status
+        type: response
+        template:
+          text: "你的当前VIP状态：{{ slots.vip_status }}，剩余收听时长：{{ slots.remaining_listening_minutes }}分钟。VIP会员可以享受无限畅听、高清音质等专属权益。"
+        next: end
+
+      - id: show_vip_error
+        type: response
+        template:
+          text: "{{ slots.vip_query_error }}"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  coupon_redeem:
+    name: 优惠码兑换
+    description: 帮用户输入并兑换优惠码，获取会员时长或折扣。
+    steps:
+      - id: start
+        type: start
+        next: ask_coupon_code
+
+      - id: ask_coupon_code
+        type: collect
+        slot_name: coupon_code
+        template:
+          text: "请输入你要兑换的优惠码。"
+        validation:
+          condition: "slots.get('coupon_code')"
+          failure_template:
+            text: "优惠码不能为空，请重新输入。"
+        next: redeem_coupon
+
+      - id: redeem_coupon
+        type: action
+        action: action_redeem_coupon
+        next:
+          - if: "slots.get('coupon_redeemed') == 'true'"
+            then: show_coupon_result
+          - else: show_coupon_failure
+
+      - id: show_coupon_result
+        type: response
+        template:
+          text: "优惠码{{ slots.coupon_code }}兑换成功！{{ slots.coupon_info }}"
+        next: end
+
+      - id: show_coupon_failure
+        type: response
+        template:
+          text: "优惠码{{ slots.coupon_code }}暂时没有兑换成功：{{ slots.coupon_info }}如需帮助可以联系人工客服。"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  refund_request:
+    name: 退款申请
+    description: 帮用户提交听书购买的退款申请，收集订单号和退款原因。
+    steps:
+      - id: start
+        type: start
+        next: ask_order_number
+
+      - id: ask_order_number
+        type: collect
+        slot_name: order_number
+        template:
+          text: "请告诉我你的订单号。"
+        validation:
+          condition: "slots.get('order_number')"
+          failure_template:
+            text: "订单号不能为空，请重新输入。"
+        next: ask_refund_reason
+
+      - id: ask_refund_reason
+        type: collect
+        slot_name: refund_reason
+        template:
+          text: "请简单说一下退款原因。"
+        next: submit_refund
+
+      - id: submit_refund
+        type: action
+        action: action_submit_refund
+        next:
+          - if: "slots.get('refund_submitted') == 'true'"
+            then: show_refund_result
+          - else: show_refund_failure
+
+      - id: show_refund_result
+        type: response
+        template:
+          text: "{{ slots.refund_message }}"
+        next: end
+
+      - id: show_refund_failure
+        type: response
+        template:
+          text: "{{ slots.refund_message }}如需进一步帮助可以联系人工客服。"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  similar_book_recommendation:
+    name: 相似听书推荐
+    description: 仅当用户已经选中某本听书（例如点击了听书卡片、或明确提到"这本听书"）后，希望推荐类似风格、同作者或同分类的相似听书时使用。如果用户没有指定具体听书，只是按场景（如睡前、通勤、学习）、风格或关键词请求推荐，请走 book_search。
+    steps:
+      - id: start
+        type: start
+        next:
+          - if: "slots.get('book_id')"
+            then: recommend_similar
+          - else: ask_keyword
+
+      - id: ask_keyword
+        type: collect
+        slot_name: book_name
+        template:
+          text: "好的，你想要推荐什么类型或场景的听书呢？比如适合睡前的、悬疑类的、名著类的都可以告诉我。"
+        next: search_by_keyword
+
+      - id: search_by_keyword
+        type: action
+        action: action_search_books
+        next: show_recommendation
+
+      - id: recommend_similar
+        type: action
+        action: action_recommend_similar_books
+        next: show_recommendation
+
+      - id: show_recommendation
+        type: response
+        template:
+          text: "{{ slots.recommendation_summary }}"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  human_handoff:
+    name: 人工客服
+    description: 用户明确要求转人工客服，或自助方式无法解决时，登记人工客服工单并把工单号和排队情况告诉用户。
+    steps:
+      - id: start
+        type: start
+        next: create_handoff
+
+      - id: create_handoff
+        type: action
+        action: action_create_handoff
+        next:
+          - if: "slots.get('handoff_ok') == 'true'"
+            then: show_handoff_result
+          - else: show_handoff_failure
+
+      - id: show_handoff_result
+        type: response
+        template:
+          text: "{{ slots.handoff_message }}"
+        next: end
+
+      - id: show_handoff_failure
+        type: response
+        template:
+          text: "{{ slots.handoff_message }}你也可以先在会话里描述具体问题，我继续帮你处理。"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  my_orders:
+    name: 我的订单列表
+    description: 查询当前用户自己的听书商城订单列表，包括订单号、听书名、订单状态和金额。用户说“我的订单”“我买过什么”“查一下我的订单”这类没有指定具体订单号的请求时使用。
+    steps:
+      - id: start
+        type: start
+        next: list_my_orders
+
+      - id: list_my_orders
+        type: action
+        action: action_list_my_orders
+        next: show_my_orders
+
+      - id: show_my_orders
+        type: response
+        template:
+          text: "{{ slots.order_list_summary }}"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  my_books:
+    name: 我购买的听书
+    description: 查询当前用户已经购买、可以收听的听书列表。用户说“我买过哪些听书”“我的书架”“我能听哪些书”这类请求时使用。
+    steps:
+      - id: start
+        type: start
+        next: list_my_books
+
+      - id: list_my_books
+        type: action
+        action: action_list_my_books
+        next: show_my_books
+
+      - id: show_my_books
+        type: response
+        template:
+          text: "{{ slots.book_list_summary }}"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  my_coupons:
+    name: 我的优惠券
+    description: 查询当前用户可用（未使用且未过期）的优惠券，包括优惠码、优惠内容和有效期。用户说“我有哪些优惠券”“优惠码还有吗”这类请求时使用。
+    steps:
+      - id: start
+        type: start
+        next: list_my_coupons
+
+      - id: list_my_coupons
+        type: action
+        action: action_list_my_coupons
+        next: show_my_coupons
+
+      - id: show_my_coupons
+        type: response
+        template:
+          text: "{{ slots.coupon_list_summary }}"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  book_purchase:
+    name: 购买听书下单
+    description: 帮用户为一本听书创建订单，订单创建后状态为待支付。用户说“我要买这本听书”“帮我下单”“购买《XX》”这类请求时使用；如果用户还没确定听书，会先询问听书名。
+    steps:
+      - id: start
+        type: start
+        next:
+          - if: "slots.get('book_id')"
+            then: create_order
+          - else: ask_book_name
+
+      - id: ask_book_name
+        type: collect
+        slot_name: book_name
+        template:
+          text: "请告诉我你想购买的听书名称。"
+        next: search_book_by_name
+
+      - id: search_book_by_name
+        type: action
+        action: action_search_book_by_name
+        next:
+          - if: "slots.get('book_found') == 'true'"
+            then: create_order
+          - else: show_search_error
+
+      - id: create_order
+        type: action
+        action: action_create_book_order
+        next:
+          - if: "slots.get('purchase_ok') == 'true'"
+            then: show_order_result
+          - else: show_order_failure
+
+      - id: show_order_result
+        type: response
+        template:
+          text: "{{ slots.purchase_message }}"
+        next: end
+
+      - id: show_order_failure
+        type: response
+        template:
+          text: "{{ slots.purchase_message }}"
+        next: end
+
+      - id: show_search_error
+        type: response
+        template:
+          text: "{{ slots.book_error }}"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  order_payment:
+    name: 订单支付
+    description: 帮用户完成待支付订单的付款。用户说“支付订单”“我要付款”“付一下刚才那个订单”这类请求时使用，需要订单号。
+    steps:
+      - id: start
+        type: start
+        next: ask_order_number
+
+      - id: ask_order_number
+        type: collect
+        slot_name: order_number
+        template:
+          text: "请告诉我需要支付的订单号。"
+        validation:
+          condition: "slots.get('order_number')"
+          failure_template:
+            text: "订单号不能为空，请重新输入。"
+        next: pay_order
+
+      - id: pay_order
+        type: action
+        action: action_pay_order
+        next:
+          - if: "slots.get('pay_ok') == 'true'"
+            then: show_pay_result
+          - else: show_pay_failure
+
+      - id: show_pay_result
+        type: response
+        template:
+          text: "{{ slots.pay_message }}"
+        next: end
+
+      - id: show_pay_failure
+        type: response
+        template:
+          text: "{{ slots.pay_message }}如需帮助可以联系人工客服。"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  vip_subscribe:
+    name: 开通或续费VIP
+    description: 帮用户开通或续费VIP会员。用户说“开通VIP”“续费会员”“买一个月会员”这类请求时使用，需要确认开通月数。
+    steps:
+      - id: start
+        type: start
+        next: ask_vip_months
+
+      - id: ask_vip_months
+        type: collect
+        slot_name: vip_months
+        template:
+          text: "请告诉我你要开通或续费几个月VIP会员（1 到 12 个月）。"
+        next: subscribe_vip
+
+      - id: subscribe_vip
+        type: action
+        action: action_subscribe_vip
+        next:
+          - if: "slots.get('vip_subscribe_ok') == 'true'"
+            then: show_subscribe_result
+          - else: show_subscribe_failure
+
+      - id: show_subscribe_result
+        type: response
+        template:
+          text: "{{ slots.vip_subscribe_message }}"
+        next: end
+
+      - id: show_subscribe_failure
+        type: response
+        template:
+          text: "{{ slots.vip_subscribe_message }}"
+        next: end
+
+      - id: end
+        type: end
+        next: []
