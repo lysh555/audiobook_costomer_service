@@ -51,12 +51,17 @@ class TurnPlanValidator:
         if resume_flow_commands and len(resume_flow_commands) != 1:
             return TurnPlanValidationResult(valid=False,reason=ClarifyReason.MULTIPLE_RESUME_COMMANDS)
 
+        has_start_flow:bool = bool(start_flow_commands)
+
         for command in task_turn_plan.commands:
             if isinstance(command,StartFlowCommand):
                 if command.flow not in flow_catalog.flows:
                     return TurnPlanValidationResult(valid=False,reason=ClarifyReason.INVALID_TASK_COMMAND)
 
             if isinstance(command,SetSlotsCommand):
+                if not has_start_flow and state.task_state.active_task is None:
+                    return TurnPlanValidationResult(valid=False,reason=ClarifyReason.MISSING_ACTIVE_TASK)
+
                 for slot_name in command.slots:
                     if slot_name not in flow_catalog.slots:
                         return TurnPlanValidationResult(valid=False,reason=ClarifyReason.INVALID_TASK_COMMAND)
@@ -93,29 +98,3 @@ class TurnPlanValidator:
             if requires_object and (focused_object is None or focused_object.type != requires_object):
                 return TurnPlanValidationResult(valid=False,reason=ClarifyReason.MISSING_FOCUSED_OBJECT)
         return TurnPlanValidationResult(valid=True)
-
-
-        
-                
-                    
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

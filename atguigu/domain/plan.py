@@ -47,6 +47,7 @@ class ClarifyReason(str,Enum):
     MISSING_TRACK = "missing_track"  # 没有任何方向
     MULTIPLE_TRACKS = "multiple_tracks"  # 存在多个方向
     MISSING_TASK_COMMANDS = "missing_task_commands"  # 确定是任务方向，但是commands指令为空
+    MISSING_ACTIVE_TASK = "missing_active_task"  # 确定是任务方向，但是填充槽位时既没有活动任务也没有启动流程
     MULTIPLE_START_COMMANDS = "multiple_start_commands"  # 确定是任务方向，但是commands中存在多个启动任务命令
     MULTIPLE_RESUME_COMMANDS = "multiple_resume_commands"  # 确定是任务方向，但是commands中存在多个恢复任务命令
     MISSING_KNOWLEDGE_INTENT = "missing_knowledge_intent"  # 确定是知识检索方向 但intents意图列表为空

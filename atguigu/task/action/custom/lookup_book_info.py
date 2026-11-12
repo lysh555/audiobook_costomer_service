@@ -3,6 +3,7 @@ from loguru import logger
 from atguigu.clients import http_client
 from atguigu.conf.config import settings
 from atguigu.domain.action import ActionResult, Action
+from atguigu.domain.messages import book_card_messages
 from atguigu.domain.state import DialogueState
 
 
@@ -22,13 +23,16 @@ class LookupBookInfoAction(Action):
         if not payload:
             return self._failure(f"没有查到《{book_id}》这本听书，请确认后再试。")
 
-        return ActionResult(slot_updates={
-            "book_name": payload.get("title") or "未知",
-            "author": payload.get("author") or "未知",
-            "category": payload.get("category") or "未知",
-            "book_found": "true",
-            "book_error": "",
-        })
+        return ActionResult(
+            slot_updates={
+                "book_name": payload.get("title") or "未知",
+                "author": payload.get("author") or "未知",
+                "category": payload.get("category") or "未知",
+                "book_found": "true",
+                "book_error": "",
+            },
+            messages=book_card_messages([payload], limit=1),
+        )
 
     def _failure(self, message: str) -> ActionResult:
         return ActionResult(slot_updates={

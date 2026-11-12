@@ -4,6 +4,7 @@ from dataclasses import asdict
 
 from atguigu.chitchat.chitchat_handler import ChitchatHandler
 from atguigu.clarify.clarify_responder import ClarifyResponder
+from atguigu.conf.config import settings
 from atguigu.domain.command import SetSlotsCommand
 from atguigu.domain.flow_catalog import Flow, FlowStep, CollectSlotStep
 from atguigu.domain.messages import UserMessage, ProcessResult, MessageType, BotMessage, MessageObject
@@ -53,7 +54,7 @@ class DialogueEngine:
         if current_session is None:
             state.shared_state.start_session()
         else:
-            if time.time() - current_session.last_activity_at > 60 * 60:
+            if time.time() - current_session.last_activity_at > settings.session_timeout_seconds:
                 state.shared_state.close_current_session()
                 state.reset_runtime_for_new_session()
                 state.shared_state.start_session()
@@ -78,6 +79,8 @@ class DialogueEngine:
         else:
             if turn_plan.task:
                 bot_messages: list[BotMessage] = await self.task_handler.handle(turn_plan.task.commands,state,user_message)
+                if not bot_messages:
+                    bot_messages = await self.clarify_responder.respond(ClarifyReason.MISSING_TASK_COMMANDS,state,user_message)
                 return bot_messages
             if turn_plan.knowledge:
                 self.pause_active_task(state)

@@ -17,8 +17,10 @@ class ResponseTemplate:
 
     @classmethod
     def from_dict(cls,data:dict[str,Any])-> "ResponseTemplate":
+        mode_value = data.get("mode") or ResponseMode.STATIC
+        mode = mode_value if isinstance(mode_value, ResponseMode) else ResponseMode(mode_value)
         return cls(
-            mode = ResponseMode(data.get("mode",ResponseMode.STATIC)),
+            mode = mode,
             text = data.get("text", ""),
             prompt = data.get("prompt", "")
         )

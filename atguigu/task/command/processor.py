@@ -34,6 +34,8 @@ class CommandProcessor:
         if isinstance(command,SetSlotsCommand):
             if state.task_state.active_task:
                 state.task_state.set_slots(command.slots)
+            else:
+                logger.warning("槽位填充失败，当前没有活动任务，已忽略槽位：{}", command.slots)
 
             return None
 

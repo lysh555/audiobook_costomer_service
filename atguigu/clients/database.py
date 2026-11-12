@@ -8,15 +8,10 @@ session_factory: async_sessionmaker[AsyncSession] | None = None
 
 def init_db_engine():
     global engine, session_factory
-    engine = create_async_engine(url=settings.database_url,echo=True)
+    engine = create_async_engine(url=settings.database_url,echo=settings.db_echo)
     session_factory = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 
 async def close_db_engine():
     if engine:
         await engine.dispose()
-
-
-
-
-

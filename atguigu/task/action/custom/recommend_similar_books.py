@@ -3,6 +3,7 @@ from loguru import logger
 from atguigu.clients import http_client
 from atguigu.conf.config import settings
 from atguigu.domain.action import ActionResult, Action
+from atguigu.domain.messages import book_card_messages
 from atguigu.domain.state import DialogueState
 
 
@@ -30,7 +31,10 @@ class RecommendSimilarBooksAction(Action):
                 f"暂时没有找到与《{title}》相似的听书，你可以换个关键词再试试，或者告诉我你感兴趣的分类。"
             )
 
-        return self._summary(self._build_summary(title, author, category, candidates))
+        return self._summary(
+            self._build_summary(title, author, category, candidates),
+            [book for book, _ in candidates],
+        )
 
     async def _collect_candidates(
         self, book_id: str, author: str, category: str
@@ -64,13 +68,21 @@ class RecommendSimilarBooksAction(Action):
     def _build_summary(
         self, title: str, author: str, category: str, candidates: list[tuple[dict, str]]
     ) -> str:
+        """推荐依据只声明真实命中的维度，避免文案与实际候选来源不一致"""
+        reasons = {reason for _, reason in candidates}
         basis_parts: list[str] = []
-        if author:
+        if "同作者" in reasons and author:
             basis_parts.append(f"同作者（{author}）")
-        if category:
+        if "同分类" in reasons and category:
             basis_parts.append(f"同分类（{category}）")
 
-        basis = f"根据《{title}》的{'、'.join(basis_parts)}" if basis_parts else f"根据《{title}》"
+        if basis_parts:
+            basis = f"根据《{title}》的{'、'.join(basis_parts)}"
+        elif "热门" in reasons:
+            basis = f"库里暂时没有与《{title}》同作者或同分类的听书，先为你推荐几本热门作品"
+        else:
+            basis = f"根据《{title}》"
+
         items: list[str] = []
         for index, (book, reason) in enumerate(candidates, start=1):
             book_title = book.get("title") or "未知听书"
@@ -78,7 +90,10 @@ class RecommendSimilarBooksAction(Action):
             book_category = book.get("category") or "未分类"
             items.append(f"{index}）《{book_title}》（{book_author}，{book_category}，{reason}）")
 
-        return f"{basis}，为你推荐：{'；'.join(items)}。"
+        joined = "；".join(items)
+        if basis_parts:
+            return f"{basis}，为你推荐：{joined}。"
+        return f"{basis}：{joined}。"
 
     async def _fetch_book(self, book_id: str) -> dict:
         url = f"{settings.audiobook_api_base_url}/books/{book_id}"
@@ -99,8 +114,11 @@ class RecommendSimilarBooksAction(Action):
         payload = self._read_payload(response)
         return payload.get("books") or []
 
-    def _summary(self, summary: str) -> ActionResult:
-        return ActionResult(slot_updates={"recommendation_summary": summary})
+    def _summary(self, summary: str, books: list[dict] | None = None) -> ActionResult:
+        return ActionResult(
+            slot_updates={"recommendation_summary": summary},
+            messages=book_card_messages(books or [], limit=self._MAX_RESULTS),
+        )
 
     def _read_payload(self, response) -> dict:
         if response.status_code != 200:

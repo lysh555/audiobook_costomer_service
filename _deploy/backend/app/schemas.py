@@ -174,3 +174,14 @@ class RefundSubmitData(BaseModel):
     success: bool = False
     order_status: str = ""
     message: str = ""
+
+
+class RefundProgressData(BaseModel):
+    found: bool = False
+    refund_id: str = ""
+    order_id: str = ""
+    status: str = ""
+    status_desc: str = ""
+    reason: str = ""
+    created_at: str = ""
+    message: str = ""

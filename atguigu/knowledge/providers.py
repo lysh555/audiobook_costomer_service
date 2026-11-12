@@ -21,7 +21,10 @@ class BookAPIProvider(KnowledgeProvider):
     provider_id = "api.book"
 
     async def retrieve(self, state: DialogueState, user_message: UserMessage, intent_ids: list[str]) -> list[KnowledgeChunk]:
-        book_id = state.shared_state.focused_object.id
+        focused_object = state.shared_state.focused_object
+        if focused_object is None or focused_object.type != "book":
+            return []
+        book_id = focused_object.id
         if book_id:
             url = f"{settings.audiobook_api_base_url}/books/{book_id}"
             try:
@@ -46,7 +49,10 @@ class OrderAPIProvider(KnowledgeProvider):
     provider_id = "api.order"
 
     async def retrieve(self, state: DialogueState, user_message: UserMessage, intent_ids: list[str]) -> list[KnowledgeChunk]:
-        order_number = state.shared_state.focused_object.id
+        focused_object = state.shared_state.focused_object
+        if focused_object is None or focused_object.type != "order":
+            return []
+        order_number = focused_object.id
         if order_number:
             order_payload = await self._fetch_order_info(order_number)
             if not order_payload:
@@ -86,7 +92,7 @@ class FAQProvider(KnowledgeProvider):
             "已退款订单不能重复申请。"
         ),
         "vip_policy": (
-            "VIP会员权益：会员期内可无限畅听全站听书，并享受高清音质；"
+            "VIP会员权益：可在剩余收听时长内畅听全站听书，并享受高清音质；"
             "会员剩余收听时长可在“我的-VIP”页面查看；用优惠码兑换的会员时长会自动叠加到现有会员期上。"
         ),
         "listening_policy": (

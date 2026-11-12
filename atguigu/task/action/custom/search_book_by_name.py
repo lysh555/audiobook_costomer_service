@@ -3,6 +3,7 @@ from loguru import logger
 from atguigu.clients import http_client
 from atguigu.conf.config import settings
 from atguigu.domain.action import ActionResult, Action
+from atguigu.domain.messages import book_card_messages
 from atguigu.domain.state import DialogueState
 
 
@@ -27,14 +28,17 @@ class SearchBookByNameAction(Action):
             return self._failure(f"没有找到《{book_name}》这本听书，请确认书名是否正确。")
 
         book: dict = books[0]
-        return ActionResult(slot_updates={
-            "book_id": str(book.get("id") or ""),
-            "book_name": book.get("title") or book_name,
-            "author": book.get("author") or "未知",
-            "category": book.get("category") or "未知",
-            "book_found": "true",
-            "book_error": "",
-        })
+        return ActionResult(
+            slot_updates={
+                "book_id": str(book.get("id") or ""),
+                "book_name": book.get("title") or book_name,
+                "author": book.get("author") or "未知",
+                "category": book.get("category") or "未知",
+                "book_found": "true",
+                "book_error": "",
+            },
+            messages=book_card_messages([book], limit=1),
+        )
 
     def _failure(self, message: str) -> ActionResult:
         return ActionResult(slot_updates={

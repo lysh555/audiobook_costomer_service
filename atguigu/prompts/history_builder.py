@@ -22,7 +22,10 @@ class HistoryBuilder:
 
 
     @classmethod
-    def build(cls, turns:list[Turn])->str:
+    def build(cls, turns:list[Turn], max_turns:int|None=20, max_chars:int|None=4000)->str:
+        if max_turns is not None and len(turns) > max_turns:
+            turns = turns[-max_turns:]
+
         messages:list[str] = []
         for turn in turns:
             messages.append(HistoryBuilder.render_user_message(turn.user_message))
@@ -30,4 +33,7 @@ class HistoryBuilder:
             for bot_message in turn.bot_messages:
                 messages.append(HistoryBuilder.render_bot_message(bot_message))
 
-        return "\n".join(messages)
+        text = "\n".join(messages)
+        if max_chars is not None and len(text) > max_chars:
+            text = "……（更早的对话已省略）\n" + text[-max_chars:]
+        return text

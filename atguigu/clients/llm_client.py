@@ -6,5 +6,6 @@ llm = init_chat_model(
     model=settings.llm_model,
     api_key=settings.llm_api_key,
     base_url=settings.llm_base_url,
-    temperature=0.4
-)
+    temperature=settings.llm_temperature,
+    timeout=settings.llm_timeout,
+).with_retry()

@@ -17,6 +17,9 @@ from atguigu.prompts.prompt_loader import load_prompt
 
 class TurnPlanner:
 
+    def __init__(self, max_retries: int = 2):
+        self.max_retries = max_retries
+
     async def predict(self,state:DialogueState,user_message:UserMessage,flow_catalog:FlowCatalog,knowledge_intents:dict[str,KnowledgeIntent])->TurnPlan:
 
         conversation_history = HistoryBuilder.build(state.shared_state.current_session().turns)
@@ -32,14 +35,25 @@ class TurnPlanner:
 
         chain = prompt | llm | JsonOutputParser()
 
-        turn_plan_dict = await chain.ainvoke({
+        invoke_input = {
             'user_message': user_message,
             'conversation_history': conversation_history,
             'focused_object_json': focused_object_json,
             'task_state_json': task_state_json,
             'knowledge_intents_json': knowledge_intents_json,
             'flows_json': flows_json
-        })
-        turn_plan:TurnPlan = TurnPlan.from_dict(turn_plan_dict)
-        logger.info("生成本轮计划JSON对象：{}", turn_plan)
-        return turn_plan
+        }
+
+        last_error: Exception | None = None
+        for attempt in range(self.max_retries + 1):
+            try:
+                turn_plan_dict = await chain.ainvoke(invoke_input)
+                turn_plan:TurnPlan = TurnPlan.from_dict(turn_plan_dict)
+                logger.info("生成本轮计划JSON对象：{}", turn_plan)
+                return turn_plan
+            except Exception as error:
+                last_error = error
+                logger.warning("轮次规划第 {} 次调用失败：{}", attempt + 1, error)
+
+        logger.error("轮次规划重试 {} 次后仍失败，降级为空计划交由澄清处理：{}", self.max_retries, last_error)
+        return TurnPlan()

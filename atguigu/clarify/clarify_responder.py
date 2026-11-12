@@ -43,6 +43,11 @@ class ClarifyResponder:
                 "你这次是想办理什么业务呢？"
                 "比如查订单、了解听书详情，或者申请退款。"
             )
+        if reason is ClarifyReason.MISSING_ACTIVE_TASK:
+            return (
+                "目前还没有正在办理的业务。"
+                "你是想申请退款、查询订单状态，还是先看看听书详情呢？"
+            )
         if reason is ClarifyReason.MISSING_KNOWLEDGE_INTENT:
             return (
                 "你是想了解听书信息、订单信息，"

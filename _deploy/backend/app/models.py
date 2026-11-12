@@ -119,6 +119,21 @@ class CouponRedemption(Base):
     user: Mapped[User] = relationship()
 
 
+class RefundRequest(Base):
+    __tablename__ = "refund_requests"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    refund_id: Mapped[str] = mapped_column(String(64), unique=True)
+    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
+    operator: Mapped[str] = mapped_column(String(64))
+    reason: Mapped[str] = mapped_column(String(255))
+    status: Mapped[str] = mapped_column(String(32))
+    status_desc: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(DateTime)
+
+    order: Mapped[Order] = relationship()
+
+
 class HandoffRequest(Base):
     __tablename__ = "handoff_requests"
 

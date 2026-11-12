@@ -3,6 +3,7 @@ from loguru import logger
 from atguigu.clients import http_client
 from atguigu.conf.config import settings
 from atguigu.domain.action import ActionResult, Action
+from atguigu.domain.messages import book_card_messages
 from atguigu.domain.state import DialogueState
 
 
@@ -38,10 +39,13 @@ class ListMyBooksAction(Action):
         if len(books) > self._MAX_DISPLAY:
             tail = f"（共 {len(books)} 本，这里先展示最近 {self._MAX_DISPLAY} 本）"
 
-        return self._result(f"你已购买并可以收听的听书有：{'；'.join(parts)}。{tail}")
+        return self._result(f"你已购买并可以收听的听书有：{'；'.join(parts)}。{tail}", books)
 
-    def _result(self, summary: str) -> ActionResult:
-        return ActionResult(slot_updates={"book_list_summary": summary})
+    def _result(self, summary: str, books: list[dict] | None = None) -> ActionResult:
+        return ActionResult(
+            slot_updates={"book_list_summary": summary},
+            messages=book_card_messages(books or [], limit=self._MAX_DISPLAY),
+        )
 
     def _read_payload(self, response) -> dict:
         if response.status_code != 200:

@@ -16,6 +16,7 @@ from app.models import (
     HandoffRequest,
     Order,
     OrderItem,
+    RefundRequest,
     User,
     VipMembership,
 )
@@ -38,6 +39,7 @@ from app.schemas import (
     OrderSummaryData,
     RefundSubmitData,
     RefundSubmitRequest,
+    RefundProgressData,
     UserBooksData,
     UserCouponsData,
     UserOrdersData,
@@ -413,6 +415,17 @@ def submit_refund(
     reason = (payload.reason or "").strip()
     order.status = "退款中"
     order.status_desc = "退款申请已提交，等待审核"
+
+    refund = RefundRequest(
+        refund_id=f"R{uuid.uuid4().hex[:12].upper()}",
+        order_id=order.id,
+        operator="system",
+        reason=reason or "未填写",
+        status="processing",
+        status_desc="退款申请已提交，等待审核",
+        created_at=datetime.now(),
+    )
+    db.add(refund)
     db.commit()
 
     reason_text = f"（原因：{reason}）" if reason else ""
@@ -421,6 +434,62 @@ def submit_refund(
             success=True,
             order_status=order.status,
             message=f"订单 {order_id} 的退款申请已提交{reason_text}，正在等待审核。",
+        )
+    )
+
+
+@router.get("/orders/{order_id}/refund", response_model=ApiResponse)
+def refund_progress(order_id: str, db: Session = Depends(get_db)) -> ApiResponse:
+    order = db.query(Order).filter(Order.order_id == order_id).first()
+    if not order:
+        return _wrap(
+            RefundProgressData(
+                found=False,
+                message=f"没有查到订单 {order_id}，请确认订单号是否准确。",
+            )
+        )
+
+    if order.status not in ("退款中", "已退款"):
+        return _wrap(
+            RefundProgressData(
+                found=False,
+                order_id=order_id,
+                message=f"订单 {order_id} 当前状态为「{order.status}」，尚未提交退款申请。",
+            )
+        )
+
+    refund = (
+        db.query(RefundRequest)
+        .filter(RefundRequest.order_id == order.id)
+        .order_by(RefundRequest.created_at.desc())
+        .first()
+    )
+
+    if not refund:
+        return _wrap(
+            RefundProgressData(
+                found=True,
+                order_id=order_id,
+                status=order.status,
+                status_desc=order.status_desc,
+                message=f"订单 {order_id} 状态为「{order.status}」，{order.status_desc}",
+            )
+        )
+
+    status_label = {"processing": "审核中", "completed": "退款完成", "rejected": "退款被驳回"}.get(
+        refund.status, refund.status
+    )
+
+    return _wrap(
+        RefundProgressData(
+            found=True,
+            refund_id=refund.refund_id,
+            order_id=order_id,
+            status=refund.status,
+            status_desc=f"{status_label}：{refund.status_desc}",
+            reason=refund.reason,
+            created_at=refund.created_at.strftime("%Y-%m-%d %H:%M"),
+            message=f"订单 {order_id} 的退款申请（{refund.refund_id}）当前状态：{status_label}——{refund.status_desc}。退款原因：{refund.reason}。提交时间：{refund.created_at.strftime('%Y-%m-%d %H:%M')}。",
         )
     )
 

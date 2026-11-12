@@ -57,6 +57,8 @@ class FlowExecutor:
                 action_result:ActionResult = await self.action_runner.run(step.action, state)
 
                 state.task_state.set_slots(action_result.slot_updates)
+                if action_result.messages:
+                    bot_messages.extend(action_result.messages)
                 self._advance(step, state)
                 continue
 

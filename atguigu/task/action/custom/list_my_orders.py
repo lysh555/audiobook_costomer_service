@@ -3,6 +3,7 @@ from loguru import logger
 from atguigu.clients import http_client
 from atguigu.conf.config import settings
 from atguigu.domain.action import ActionResult, Action
+from atguigu.domain.messages import order_card_messages
 from atguigu.domain.state import DialogueState
 
 
@@ -39,10 +40,13 @@ class ListMyOrdersAction(Action):
         if len(orders) > self._MAX_DISPLAY:
             tail = f"（共 {len(orders)} 笔订单，这里先展示最近 {self._MAX_DISPLAY} 笔）"
 
-        return self._result(f"你最近的订单有：{'；'.join(parts)}。{tail}")
+        return self._result(f"你最近的订单有：{'；'.join(parts)}。{tail}", orders)
 
-    def _result(self, summary: str) -> ActionResult:
-        return ActionResult(slot_updates={"order_list_summary": summary})
+    def _result(self, summary: str, orders: list[dict] | None = None) -> ActionResult:
+        return ActionResult(
+            slot_updates={"order_list_summary": summary},
+            messages=order_card_messages(orders or [], limit=self._MAX_DISPLAY),
+        )
 
     def _read_payload(self, response) -> dict:
         if response.status_code != 200:

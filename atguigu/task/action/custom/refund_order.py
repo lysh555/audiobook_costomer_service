@@ -23,6 +23,8 @@ class SubmitRefundAction(Action):
 
         payload: dict = self._read_payload(response)
         if not payload:
+            if response.status_code >= 500:
+                return self._result(False, "退款申请提交失败，服务暂时不可用，请稍后再试。")
             return self._result(False, f"退款申请提交失败，请确认订单 {order_number} 是否正确后重试。")
 
         success = bool(payload.get("success"))

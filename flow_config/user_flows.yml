@@ -99,6 +99,16 @@ slots:
     label: 退款申请说明
     description: 退款申请提交结果给用户的说明
 
+  refund_progress_found:
+    type: text
+    label: 退款进度是否查到
+    description: 退款进度查询是否找到记录，true 表示找到，false 表示未找到
+
+  refund_progress_message:
+    type: text
+    label: 退款进度查询结果
+    description: 退款进度查询给用户的说明
+
   book_found:
     type: text
     label: 听书查询结果
@@ -397,7 +407,7 @@ flows:
       - id: show_vip_status
         type: response
         template:
-          text: "你的当前VIP状态：{{ slots.vip_status }}，剩余收听时长：{{ slots.remaining_listening_minutes }}分钟。VIP会员可以享受无限畅听、高清音质等专属权益。"
+          text: "你的当前VIP状态：{{ slots.vip_status }}，剩余收听时长：{{ slots.remaining_listening_minutes }}分钟。VIP会员可在剩余收听时长内畅听全站听书，并享受高清音质等专属权益。"
         next: end
 
       - id: show_vip_error
@@ -447,6 +457,63 @@ flows:
         type: response
         template:
           text: "优惠码{{ slots.coupon_code }}暂时没有兑换成功：{{ slots.coupon_info }}如需帮助可以联系人工客服。"
+        next: end
+
+      - id: end
+        type: end
+        next: []
+
+  refund_progress_query:
+    name: 退款进度查询
+    description: 查询已提交退款申请的当前处理进度，例如审核中、退款完成、退款被驳回等。仅当订单已经处于退款中或已退款状态时使用。如果用户要申请退款（提交退款），应走 refund_request。
+    steps:
+      - id: start
+        type: start
+        next: ask_order_number
+
+      - id: ask_order_number
+        type: collect
+        slot_name: order_number
+        template:
+          text: "请告诉我你要查询退款进度的订单号。"
+        validation:
+          condition: "slots.get('order_number')"
+          failure_template:
+            text: "订单号不能为空，请重新输入。"
+        next: lookup_refund_progress
+
+      - id: lookup_refund_progress
+        type: action
+        action: action_lookup_refund_progress
+        next:
+          - if: "slots.get('refund_progress_found') == 'true'"
+            then: show_refund_progress
+          - else: show_refund_progress_not_found
+
+      - id: show_refund_progress
+        type: response
+        template:
+          mode: rephrase
+          text: "{{ slots.refund_progress_message }}"
+          prompt: |
+            请结合对话历史和当前用户消息，对基础回复进行自然改写。
+
+            对话历史：{{ history }}
+            当前用户消息：{{ user_message }}
+            基础回复：{{ current_response }}
+        next: end
+
+      - id: show_refund_progress_not_found
+        type: response
+        template:
+          mode: rephrase
+          text: "{{ slots.refund_progress_message }}"
+          prompt: |
+            请结合对话历史和当前用户消息，对基础回复进行自然改写。如果提示尚未提交退款，可以顺便问用户是否需要申请退款。
+
+            对话历史：{{ history }}
+            当前用户消息：{{ user_message }}
+            基础回复：{{ current_response }}
         next: end
 
       - id: end

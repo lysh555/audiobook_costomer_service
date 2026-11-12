@@ -1,9 +1,7 @@
 from contextlib import asynccontextmanager
-
 import uvicorn
 from fastapi import FastAPI
 from loguru import logger
-
 from atguigu.clients.database import init_db_engine, close_db_engine
 from atguigu.clients.http_client import init_http_client, close_http_client
 from atguigu.conf.config import settings
@@ -22,7 +20,6 @@ async def lifespan(_app:FastAPI):
     await close_db_engine()
     await close_http_client()
     logger.info("项目关闭，执行清理资源")
-
 
 app = FastAPI(lifespan=lifespan)
 

@@ -5,11 +5,14 @@ from loguru import logger
 from atguigu.clients import http_client
 from atguigu.conf.config import settings
 from atguigu.domain.action import ActionResult, Action
+from atguigu.domain.messages import book_card_messages
 from atguigu.domain.state import DialogueState
 
 
 class SearchBooksAction(Action):
     name = "action_search_books"
+
+    _MAX_CARDS = 3
 
     _FILLER_WORDS = (
         "推荐", "一本", "适合", "听的", "听的书", "有声书", "听书",
@@ -55,7 +58,7 @@ class SearchBooksAction(Action):
 
         if books:
             summary = self._build_summary(matched_keyword, books)
-            return ActionResult(slot_updates={"recommendation_summary": summary})
+            return self._result(summary, books)
 
         all_books = await self._search("")
         scene = self._match_scene(keyword)
@@ -63,10 +66,10 @@ class SearchBooksAction(Action):
             scene_word, categories, reason = scene
             scene_books = self._filter_by_category(all_books, categories) or all_books
             summary = self._build_scene_summary(scene_word, reason, scene_books)
-        else:
-            summary = self._build_fallback_summary(keyword, all_books)
+            return self._result(summary, scene_books)
 
-        return ActionResult(slot_updates={"recommendation_summary": summary})
+        summary = self._build_fallback_summary(keyword, all_books)
+        return self._result(summary, all_books)
 
     async def _search(self, keyword: str) -> list[dict]:
         url = f"{settings.audiobook_api_base_url}/books/search"
@@ -132,3 +135,9 @@ class SearchBooksAction(Action):
         if display:
             return f"库里暂时没有与“{display}”相关的听书，先为你推荐这几本热门听书：" + "、".join(titles)
         return "为你推荐这几本热门听书：" + "、".join(titles)
+
+    def _result(self, summary: str, books: list[dict]) -> ActionResult:
+        return ActionResult(
+            slot_updates={"recommendation_summary": summary},
+            messages=book_card_messages(books, limit=self._MAX_CARDS),
+        )

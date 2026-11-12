@@ -61,9 +61,11 @@ Command 规则：
 
 - 用户在开始 Flow 的同时提供了该 Flow 所需的 Slot，可以先输出 `start_flow`，再输出 `set_slots`。
 - 用户只是回答活动任务刚刚提出的问题时，只输出 `set_slots`，不要重新开始 Flow。Slot 名称必须来自该活动 Flow 声明的 Slots。
+- 只有两种情况允许输出 `set_slots`：同一计划中已经输出 `start_flow`；或者 Task State 的 `active_task` 不为 `null` 且用户正在回答该任务的问题。若 `active_task` 为 `null` 而用户要办理业务，必须输出 `start_flow` 来开始对应 Flow，禁止只输出 `set_slots`。
 - 用户提出与活动任务不同的新业务时，使用 `start_flow`；任务切换由程序处理。
+- 退款相关 Flow 的区分规则：用户要**申请退款**（提交退款）时走 `refund_request`；用户要**查询退款进度**（退款到哪一步了、退款审核结果、退款是否到账）时走 `refund_progress_query`。不要把退款进度查询误判为退款申请。
 - 用户要搜索或推荐听书，并且当前消息中已经给出了书名、作者、分类或场景等线索时，必须把这些线索提取为 `book_name` 的槽值，与 `start_flow` 一起输出 `set_slots`。例如“推荐一本适合睡前听的书”应输出 `start_flow`(book_search) 和 `set_slots`({"book_name": "睡前"})，不要因为“睡前”不是书名就留空。
-- 只记录用户当前消息明确提供的值。当前消息明确使用“这个订单”“这本听书”等指代时，可以使用 Focused Object 的 ID。
+- 只记录用户当前消息明确提供的值。当前消息明确使用“这个订单”“这本听书”等指代时，可以使用 Focused Object 的 ID。不要把对话历史里的说法或 Focused Object 的属性当作本轮用户提供的槽值。
 - 不要把系统查询或 Action 才能产生的结果写入 Slot。
 - 不要编造 Flow ID、Task ID、Slot 名称或 Slot 值。
 - 用户表达了任务操作，但缺少确定 Command 所需的信息时，输出 `{"task":{"commands":[]},"knowledge":null,"chitchat":null}`，交给后续模块澄清。
@@ -102,12 +104,37 @@ Intent 规则：
   "chitchat": null
 }
 
-活动任务是退款申请，最近一条机器人消息询问退款原因，用户说“因为重复购买”：
+活动任务是退款申请，最近一条机器人消息询问退款原因，用户说"因为重复购买"：
 
 {
   "task": {
     "commands": [
       {"command": "set_slots", "slots": {"refund_reason": "重复购买"}}
+    ]
+  },
+  "knowledge": null,
+  "chitchat": null
+}
+
+用户说"退款进度怎么样了"或"退款到哪一步了"：
+
+{
+  "task": {
+    "commands": [
+      {"command": "start_flow", "flow": "refund_progress_query"}
+    ]
+  },
+  "knowledge": null,
+  "chitchat": null
+}
+
+用户说"帮我查一下订单 A1001 的退款进度"：
+
+{
+  "task": {
+    "commands": [
+      {"command": "start_flow", "flow": "refund_progress_query"},
+      {"command": "set_slots", "slots": {"order_number": "A1001"}}
     ]
   },
   "knowledge": null,

@@ -420,13 +420,18 @@ function getObjectIdentifier(message) {
   return id ? `${label}：${id}` : label
 }
 
+function getObjectStatus(message) {
+  const payload = message.payload ?? {}
+  return payload.status ?? payload.attributes?.status ?? ''
+}
+
 function getObjectSummary(message) {
   const payload = message.payload ?? {}
   if (message.objectType === 'order') {
-    const status = payload.status ?? payload.attributes?.status
+    const status = getObjectStatus(message)
     return status ? `订单状态：${statusText(status)}` : '听书订单'
   }
-  return formatBookSummary(payload)
+  return formatBookSummary({ ...(payload.attributes ?? {}), ...payload })
 }
 
 function getObjectAmount(message) {
@@ -808,8 +813,8 @@ async function copyText(text, key) {
                           {{ getObjectTypeLabel(botMsg) }}
                         </div>
                         <img
-                          v-if="botMsg.type === 'object' && botMsg.payload.cover_url"
-                          :src="botMsg.payload.cover_url"
+                          v-if="botMsg.type === 'object' && (botMsg.payload.cover_url || botMsg.payload.attributes?.cover_url)"
+                          :src="botMsg.payload.cover_url || botMsg.payload.attributes?.cover_url"
                           :alt="getObjectTitle(botMsg)"
                           class="object-card-image"
                           @error="$event.target.style.display='none'"
@@ -817,7 +822,7 @@ async function copyText(text, key) {
                         <div class="object-card-title">{{ getObjectTitle(botMsg) }}</div>
                         <div class="object-card-meta">{{ getObjectIdentifier(botMsg) }}</div>
                         <div class="object-card-meta">
-                          <span v-if="botMsg.objectType === 'order' && botMsg.payload.status" class="status-badge" :class="getStatusClass(botMsg.payload.status)">{{ statusText(botMsg.payload.status) }}</span>
+                          <span v-if="botMsg.objectType === 'order' && getObjectStatus(botMsg)" class="status-badge" :class="getStatusClass(getObjectStatus(botMsg))">{{ statusText(getObjectStatus(botMsg)) }}</span>
                           <span v-else>{{ getObjectSummary(botMsg) }}</span>
                         </div>
                         <div class="object-card-price">{{ getObjectAmount(botMsg) }}</div>
